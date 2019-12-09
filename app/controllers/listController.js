@@ -251,22 +251,49 @@ let deleteList = (req, res) => {
 let deleteItem = (req, res) => {
   let itemToBeDeleted = () => {
     return new Promise ((resolve, reject) => {
-      // { 'listItems.itemsId': { $in: [req.params.itemId] } }
-      listModel.findOneAndDelete({ 'listItems.itemsId': { $in: [req.params.itemId] } }, (err, data) => {
-        if (err) {
-          logger.error('Failed to delete Item/ Item Not Found', 'listController: deleteItems()', 5);
-          let apiResponse = response.generate(true, 'Failed to delete List', 400, null);
-          reject(apiResponse);
-        } else {
-          resolve(data);
+      // listModel.findOneAndDelete({ 'listItems.itemsId': { $in: [req.params.itemId] } }, (err, data) => {
+      //   if (err) {
+      //     logger.error('Failed to delete Item/ Item Not Found', 'listController: deleteItems()', 5);
+      //     let apiResponse = response.generate(true, 'Failed to delete List', 400, null);
+      //     reject(apiResponse);
+      //   } else {
+      //     resolve(data);
+      //   }
+      // });
+
+      listModel.updateOne(
+        {listId: req.params.listId}, { $pull: { listItems: { itemsId: req.params.itemId } } }, (err, data) => {
+          if (err) {
+            console.log(err);
+            reject(err);
+          } else {
+            resolve(data);
+          }
         }
-      });
+        );
+
+      // listModel.findOneAndUpdate({ 'listItems.itemsId': { $in: [req.params.itemId] }}, { $pull: {itemsId: req.params.itemId }}, { multi: true }, (err, data) => {
+      //   if (err) {
+      //     logger.error('Failed to delete Item/ Item Not Found', 'listController: deleteItems()', 5);
+      //     let apiResponse = response.generate(true, 'Failed to delete List', 400, null);
+      //     reject(apiResponse);
+      //   } else {
+      //     if (data) {
+      //       let keyData =  data.listItems.pull({itemsId: req.params.itemId })
+      //       resolve(keyData);
+      //     }
+      //   }
+      // });
     });
   }
 
   // calling promise
   itemToBeDeleted(req, res)
     .then((resolve) => {
+      console.log("===============");
+      console.log(resolve);
+      console.log("===============");
+
       let apiResponse = response.generate(false, 'Item Deleted Succesfully', 200, resolve);
       res.status(200).send(apiResponse)
     })

@@ -10,6 +10,6 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/create`, listController.createList);
     app.post(`${baseUrl}/items/create/:listId`, listController.createItems);
     app.post(`${baseUrl}/delete/:listId`, listController.deleteList);
-    app.post(`${baseUrl}/items/delete/:itemId`, listController.deleteItem);
+    app.post(`${baseUrl}/items/delete/:listId/:itemId`, listController.deleteItem);
     // app.post(`${baseUrl}/item/create`, listController.createItems);
 }
